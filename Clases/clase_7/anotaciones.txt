@@ -1,0 +1,45 @@
+lo importante es que funciona asincronamente pero no es bidireccional
+
+
+el sigusr1 se usa para que el usuario pueda como redefinir senales en base a lo que el proceso necesite. 
+Si no esta especificado que debe hacer, el proceso se finaliza,que es lo que hace el proceso por defecto
+
+Senales asincronas--> senales que vienen desde otros procesos
+Sigalarm corta cuando no se han recibido senales por cierto tiempo
+sigpause pausa hasta recibir una senal
+
+
+SIGINT (Interrupción, por ejemplo, con Ctrl+C)
+
+SIGTERM (Terminación del proceso)
+
+SIGKILL (Terminación forzada, no atrapable)
+
+SIGHUP (Hangup, desconexión del terminal)
+
+SIGUSR1 y SIGUSR2 (para uso definido por el usuario)
+
+import signal
+
+def handler(sig, frame):
+    print("SIGINT atrapado. Volviendo al comportamiento por defecto.")
+    signal.signal(signal.SIGINT, signal.SIG_DFL)
+
+signal.signal(signal.SIGINT, handler)
+ aca lo que pasa es que al hacer ctrl+c se mete dentro de handler y como despues ya no hay un handler personalizado,corta
+
+
+
+para kill 
+Nombre	Numero
+SIGTERM	15	Terminación amable
+SIGKILL	9	Terminación inmediata y forzada
+SIGINT	2	Interrupción (Ctrl+C)
+SIGHUP	1	Hang-up: recarga configuración
+SIGSTOP	19	Pausa incondicional del proceso
+SIGCONT	18	Reanuda un proceso pausado
+USR1	10	Si el programa tiene definida la senal hace algo, sino corta
+
+
+usr1--> signal.signal(signal.SIGUSR1, handler_usr1)
+
