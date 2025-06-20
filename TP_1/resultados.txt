@@ -1,0 +1,10 @@
+Hubieron un total de 2 bloques corruptos de 60 analizados
+----------------------------------------
+Media total de frecuencia: 121.27
+Desviacion total de frecuencia: 34.53
+----------------------------------------
+Media total de presion: 146.45
+Desviacion total de presion: 18.72
+----------------------------------------
+Media total de oxigeno: 94.71
+Desviacion total de oxigeno: 3.1
