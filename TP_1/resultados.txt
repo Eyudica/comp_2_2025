@@ -1,10 +1,12 @@
 Hubieron un total de 2 bloques corruptos de 60 analizados
+Cadena corrupta: TEST93329c30d8f7fe7822321f96a29ff287e3fd66340089b9c5bcb6a110956cb20f no es igual a 93329c30d8f7fe7822321f96a29ff287e3fd66340089b9c5bcb6a110956cb20f en el bloque 3
+Cadena corrupta: TEST73adee06837ed32ce824562a3fb2a048a92f5aef3a4c1d1226ca2b4c5e098e3e no es igual a 73adee06837ed32ce824562a3fb2a048a92f5aef3a4c1d1226ca2b4c5e098e3e en el bloque 4
 ----------------------------------------
-Media total de frecuencia: 121.27
-Desviacion total de frecuencia: 34.53
+Media total de frecuencia: 117.39
+Desviacion total de frecuencia: 33.27
 ----------------------------------------
-Media total de presion: 146.45
-Desviacion total de presion: 18.72
+Media total de presion: 141.53
+Desviacion total de presion: 19.11
 ----------------------------------------
-Media total de oxigeno: 94.71
-Desviacion total de oxigeno: 3.1
+Media total de oxigeno: 95.21
+Desviacion total de oxigeno: 3.2
