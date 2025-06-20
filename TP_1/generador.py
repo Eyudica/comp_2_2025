@@ -10,6 +10,7 @@ import collections
 from hashlib import sha256
 import sys
 import signal
+from tqdm import tqdm
 PAQUETES = 60
 #Genera una muestra aleatoria
 def generar_muestra():
@@ -21,7 +22,6 @@ def generar_muestra():
     }
 #Calcula la media y desviacion de cada tipo de dato, enviando los resultados al queue para el proceso verificador
 def make_math(conn,clave,queue):
-    signal.signal(signal.SIGINT, signal.SIG_IGN)
 
     ventana=collections.deque(maxlen=30)
 
@@ -50,18 +50,16 @@ def make_math(conn,clave,queue):
 
         
 #Genera las 60 muestras y las envia al pipe que esta conectado cada proceso que haga los calculos
-#de la media y de la desviacion (make_math)
+#de la media y de la desviacion (make_math).Muestra una barra de progreso a medida que se generan las muestras
 def make_muestra(conns):
-    signal.signal(signal.SIGINT, signal.SIG_IGN)
-    print("Generando muestras.Espera 60")
-    for _ in range(PAQUETES):
+   # print("Generando muestras.Espera 60 segundos")
+    for _ in tqdm(range(PAQUETES),desc="Generando muestras"):
         muestra=generar_muestra()
         for conn in conns:
             conn.send(muestra)
         time.sleep(1)
 #Tiene un queue de entrada para recibir las muestras y un queue de salida para enviar los bloques analizados
 def validar(queue_entrada,queue_salida):
-    signal.signal(signal.SIGINT, signal.SIG_IGN)
 
     bloques = []
     bloques_por_timestamp = {}
@@ -132,7 +130,6 @@ def iniciar_procesos(tipo,queue):
     receptor.join()
 #Para atrapar el ctrl+c
 def handler(sig,frame):
-    print("\nEl usuario presiono la tecla CTRL+C")
     os._exit(1)
 
 def main():
@@ -146,17 +143,17 @@ def main():
     queue=multiprocessing.Queue()
     queue_resultados_validados=multiprocessing.Queue()
     #Genera las muestras y los envia a cada pipe
-    generador_p=multiprocessing.Process(target=make_muestra, args=([p[0] for p in pipes],))
+    generador_p=multiprocessing.Process(target=make_muestra, args=([p[0] for p in pipes],),daemon=True)
     generador_p.start()
     
     tipos=["frecuencia", "presion", "oxigeno"]
     analizadores=[]
     #Lanza los 3 procesos y  le pasa el pipe hijo al  proceso hijo
     for i,tipo in enumerate(tipos):
-        p=multiprocessing.Process(target=make_math, args=(pipes[i][1],tipo,queue))
+        p=multiprocessing.Process(target=make_math, args=(pipes[i][1],tipo,queue),daemon=True)
         p.start()
         analizadores.append(p)#--> se usa analizadores para guardar los procesos  hijos
-    verificador_p=multiprocessing.Process(target=validar, args=(queue,queue_resultados_validados))
+    verificador_p=multiprocessing.Process(target=validar, args=(queue,queue_resultados_validados),daemon=True)
     verificador_p.start()
     procesos = [generador_p] + analizadores + [verificador_p]
 
