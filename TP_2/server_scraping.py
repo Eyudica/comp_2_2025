@@ -67,7 +67,7 @@ def extract_page_data(soup):
 
 def contact_processing_server(urls, processing_ip, processing_port):
     """Se conecta a server_processing, envía URLs y recibe los resultados."""
-    print(f"🗣️  Contactando a server_processing en {processing_ip}:{processing_port}...")
+    print(f"Contactando a server_processing en {processing_ip}:{processing_port}...")
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         try:
             s.connect((processing_ip, processing_port))

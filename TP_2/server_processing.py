@@ -71,7 +71,7 @@ def analizar_imagenes(url, q, carpeta_destino="imagenes", max_imagenes=5):
         driver = webdriver.Chrome(options=options)
         driver.get(url)
         time.sleep(5)
-        html = driver.page_sourcer
+        html = driver.page_source
         driver.quit()
 
         soup = BeautifulSoup(html, "html.parser")
