@@ -156,59 +156,57 @@ def handler(signum, frame):
 
 def main(ip, port, processes):
     signal.signal(signal.SIGINT, handler)
-    carpeta_destino = "imagenes"
-    if os.path.exists(carpeta_destino):
-        shutil.rmtree(carpeta_destino)
-    os.makedirs(carpeta_destino, exist_ok=True)
+    
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.bind((ip, port))
         s.listen()
         print(f"Servidor escuchando en {ip}:{port}")
 
-        conn, addr = s.accept()
-        with conn:
-            print(f"Conectado con {addr}")
-            while True:
-                data = conn.recv(4096)
-                if not data:
-                    break
+        while True:
+            conn, addr = s.accept()
+            with conn:
+                print(f"Conectado con {addr}")
+                while True:
+                    data = conn.recv(4096)
+                    if not data:
+                        break
 
-                urls = json.loads(data.decode())
-                
-                if len(urls)==0:
-                    conn.send((json.dumps({"status": "No hay URLs para analizar"}) + "\n").encode())
-                    break
-                conn.send((json.dumps({"status": "Realizando scrapping..."}) + "\n").encode())
-                print(f"URLs recibidas: {urls}")
-                manager = multiprocessing.Manager()
-                q = manager.Queue()
-                tareas = []
-
-                for url in urls:
-                    tareas.extend([
-                        (analizar_rendimiento, url, q),
-                        (analizar_imagenes, url, q),
-                        (take_screenshot, url, q)
-                    ])
-
-                with multiprocessing.Pool(processes=processes) as pool:
-                    pool.map(ejecutar_tarea, tareas)
-
-                resultados = {}
-                while not q.empty():
-                    tipo, data = q.get()
-                    url = data.get("url")
+                    urls = json.loads(data.decode())
                     
-                    if url not in resultados:
-                        resultados[url] = {}
-                    
-                    resultados[url][tipo] = data
+                    if len(urls)==0:
+                        conn.send((json.dumps({"status": "No hay URLs para analizar"}) + "\n").encode())
+                        break
+                    conn.send((json.dumps({"status": "Realizando scrapping..."}) + "\n").encode())
+                    print(f"URLs recibidas: {urls}")
+                    manager = multiprocessing.Manager()
+                    q = manager.Queue()
+                    tareas = []
 
-                conn.send((json.dumps(resultados) + "\n").encode())
-                conn.send((json.dumps({"status": "DONE"}) + "\n").encode())
-                print("Datos enviados al cliente\n")
-        conn.close()
-        print("Conexión cerrada")
+                    for url in urls:
+                        tareas.extend([
+                            (analizar_rendimiento, url, q),
+                            (analizar_imagenes, url, q),
+                            (take_screenshot, url, q)
+                        ])
+
+                    with multiprocessing.Pool(processes=processes) as pool:
+                        pool.map(ejecutar_tarea, tareas)
+
+                    resultados = {}
+                    while not q.empty():
+                        tipo, data = q.get()
+                        url = data.get("url")
+                        
+                        if url not in resultados:
+                            resultados[url] = {}
+                        
+                        resultados[url][tipo] = data
+
+                    conn.send((json.dumps(resultados) + "\n").encode())
+                    conn.send((json.dumps({"status": "DONE"}) + "\n").encode())
+                    print("Datos enviados al cliente\n")
+            conn.close()
+            print("Conexión cerrada, esperando una nueva...")
 
 
 

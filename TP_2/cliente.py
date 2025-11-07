@@ -2,7 +2,8 @@ import socket
 import json
 import argparse
 import re
-
+import os
+import shutil
 def get_urls():
     urls = []
     print("Introduce las URLs a analizar (una por línea, enter para terminar):")
@@ -17,6 +18,13 @@ def get_urls():
     return urls
 
 def main(ip, port):
+    eliminar_imagenes=input("¿Eliminar imagenes anteriores? [s/n] ")
+    if eliminar_imagenes.lower()=="s":
+        carpeta_destino = "imagenes"
+        if os.path.exists(carpeta_destino):
+            shutil.rmtree(carpeta_destino)
+        os.makedirs(carpeta_destino, exist_ok=True)
+    
     urls = get_urls()
     if not urls:
         print("No se ingresaron URLs.")
