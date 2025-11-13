@@ -16,11 +16,6 @@ import argparse
 import signal
 import sys
 
-import time
-import requests
-from bs4 import BeautifulSoup
-from urllib.parse import urljoin
-
 def analizar_rendimiento(url, q):
     try:
         inicio = time.time()
